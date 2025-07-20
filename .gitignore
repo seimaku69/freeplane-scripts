@@ -1,0 +1,10 @@
+# keine MDs, XSLTs berücksichtigen
+*.xslt
+*.md
+# keine PDF,HTML,Json
+*.pdf
+*.html
+*.json
+
+# ..dennoch berücksichtigen
+!README.md
