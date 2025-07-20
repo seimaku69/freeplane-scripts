@@ -46,7 +46,7 @@ final String hIndicator = "#"
 boolean createTOC = true
 
 // Use Obsidian to edit export
-final boolean useObsidian = true
+final boolean useObsidian = false
 
 // exported elements
 boolean expAlias = true
