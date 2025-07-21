@@ -216,7 +216,7 @@ if (createTOC) {
     sbTOC << "  $lf"
     for (n in node.findAll()) {
         nLevel = n.getNodeLevel(true)
-        stripText = n.getTransformedText().strip()
+        stripText = n.getText().strip()
         lnk = stripText.toLowerCase().replace(" ", "-")
         sbTOC << getPrecStr(nLevel - startNodeLevel, "\t") << "- [$stripText](#$lnk)  $lf"
     }
@@ -229,14 +229,14 @@ addMetadata(sb)
 // Creating Markdown for each node in actual branch
 node.findAll().each {
     // write header - don't touch user defined headers
-    transText = it.getTransformedText().strip()
+    stripText = it.getText().strip()
     if (it.getPlainText().startsWith(hIndicator)) {
-        sb << "  $lf" << transText << lf
+        sb << "  $lf" << stripText << lf
     }
     else {
-        sb << "  $lf" << getPrecStr(it.getNodeLevel(true) - startNodeLevel + 1, hIndicator) << " " << transText << lf
+        sb << "  $lf" << getPrecStr(it.getNodeLevel(true) - startNodeLevel + 1, hIndicator) << " " << stripText << lf
     }
-    sb << "  $lf"
+    // sb << "  $lf"
 
     // picture assigned to node
     if (it.getExternalObject()) {
@@ -293,7 +293,16 @@ node.findAll().each {
         // link to a file - cutting 'file:'
         if (linkText.startsWith("file:")) {
             outLnkUrl = linkText.replace("file:", "")
-            outLnkText = it.getPlainText()
+            //outLnkText = it.getPlainText()
+            linkedFile = new File(outLnkUrl)
+            outLnkText = linkedFile.getName()
+        }
+        // relative link to a file with '../..' or '/..'
+        if (linkText.startsWith("..") || linkText.startsWith("/")) {
+            outLnkUrl = linkText
+            //outLnkText = it.getPlainText()
+            linkedFile = new File(outLnkUrl)
+            outLnkText = linkedFile.getName()
         }
         // link to a website - link is correct in markdown
         if (linkText.startsWith("https:")) {
