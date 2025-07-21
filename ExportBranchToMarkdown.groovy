@@ -24,15 +24,22 @@
     #todo 01 : Links in Attributen
         Links die mit '/' oder '# ' beginnen, werden als Text exportiert !
 
+    #todo 02 : Effizientere Nutzung von Pattern und Matcher ?
+
 */
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileWriter
+import java.io.IOException
+
+import java.util.regex.Pattern
+import java.util.regex.Matcher
+
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.JCheckBox
+
 import java.awt.event.ItemListener
 import java.awt.event.ItemEvent
 import java.awt.GridLayout
@@ -57,6 +64,10 @@ boolean expDetails = true
 boolean expLinks = true
 boolean expNotes = true
 boolean expTags = true
+
+// Pattern and Matcher for MD-Links
+final Pattern mdPattern = Pattern.compile("\\[.+\\]\\(.+\\)")
+final Matcher matcher = mdPattern.matcher("")
 
 def sb = new StringBuffer()
 def sbTOC = new StringBuffer()
@@ -196,7 +207,7 @@ ckTags.addItemListener(new ItemListener() {
 	}
 })
 panel.add(ckTags)
-panel.setPreferredSize(new Dimension(250,200))
+panel.setPreferredSize(new Dimension(200,200))
 // show dialog to select elements
 ret = JOptionPane.showConfirmDialog(ui.getFrame(), panel, "Export elements", JOptionPane.OK_CANCEL_OPTION)
 if (ret == JOptionPane.CANCEL_OPTION) return
@@ -221,7 +232,6 @@ if (createTOC) {
         lnk = stripText.toLowerCase().replace(" ", "-")
         sbTOC << getPrecStr(nLevel - startNodeLevel, "\t") << "- [$stripText](#$lnk)  $lf"
     }
-    sbTOC << "$lf  $lf"
 }
 
 // adding metadata block
@@ -232,33 +242,37 @@ node.findAll().each {
     // write header - don't touch user defined headers
     stripText = it.getShortText()
     if (it.getPlainText().startsWith(hIndicator)) {
-        sb << "  $lf" << stripText << lf
+        sb << "  $lf" << stripText << "  $lf"
     }
     else {
-        sb << "  $lf" << getPrecStr(it.getNodeLevel(true) - startNodeLevel + 1, hIndicator) << " " << stripText << lf
+        sb << "  $lf" << getPrecStr(it.getNodeLevel(true) - startNodeLevel + 1, hIndicator) << " " << stripText << "  $lf"
     }
-    // sb << "  $lf"
-
+    // if node-text is a markdown-link - add link after header
+    matcher.reset(it.getText())
+    while (matcher.find()) {
+	    sb << "  $lf" << "Link : " << matcher.group() << "  $lf"
+    }
+    
     // picture assigned to node
     if (it.getExternalObject()) {
         uri = it.getExternalObject().getUri()
-        sb << "![$it.text]($uri)  $lf"
+        sb << "  $lf![$it.text]($uri)  $lf"
     }
 
     // alias of node
     if (expAlias && !it.getAlias().isEmpty()) {
-        sb << "*Alias :* " << it.getAlias() << "  $lf"
+        sb << "  $lf*Alias :* " << it.getAlias() << "  $lf"
     }
 
     // tags of node
     tagsList = it.getTags().getTags()
     if (expTags && tagsList.size() > 0) {
-        sb << "*Tags :* " << tagsList.toString() << "  $lf"
+        sb << "  $lf*Tags :* " << tagsList.toString() << "  $lf"
     }
 
     // details of node
     if (expDetails && it.getDetails()) {
-        sb << "*Details :*  $lf" << it.getDetails().toString() << "  $lf"
+        sb << "  $lf*Details :*  $lf" << it.getDetails().toString() << "  $lf"
     }
 
     // handle attributes - written as code-block - formulas calculated (getValues)
@@ -271,7 +285,6 @@ node.findAll().each {
         for (i = 0; i < attrs.size(); i++) {
             sb << "| " << attrs.getNames()[i] << " | " << attrs.getValues()[i] << " |" << lf
         }
-        sb << "  $lf"
     }
 
     // export Freeplane links (hyper, local hyper, website) as markdown
@@ -310,7 +323,7 @@ node.findAll().each {
             outLnkUrl = linkText
             outLnkText = it.getPlainText()
         }
-        sb << "*Link :* [$outLnkText]($outLnkUrl)  $lf"
+        sb <<"  $lf*Link :* [$outLnkText]($outLnkUrl)  $lf"
     }
 
     if (expConns) {
