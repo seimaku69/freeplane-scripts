@@ -36,6 +36,7 @@ import javax.swing.JCheckBox
 import java.awt.event.ItemListener
 import java.awt.event.ItemEvent
 import java.awt.GridLayout
+import java.awt.Dimension
 
 
 lf = System.lineSeparator()
@@ -195,9 +196,9 @@ ckTags.addItemListener(new ItemListener() {
 	}
 })
 panel.add(ckTags)
-
+panel.setPreferredSize(new Dimension(250,200))
 // show dialog to select elements
-ret = JOptionPane.showConfirmDialog(ui.getFrame(), panel, "Export elements : ", JOptionPane.OK_CANCEL_OPTION)
+ret = JOptionPane.showConfirmDialog(ui.getFrame(), panel, "Export elements", JOptionPane.OK_CANCEL_OPTION)
 if (ret == JOptionPane.CANCEL_OPTION) return
 
 // -----------------------------------------------------
@@ -216,7 +217,7 @@ if (createTOC) {
     sbTOC << "  $lf"
     for (n in node.findAll()) {
         nLevel = n.getNodeLevel(true)
-        stripText = n.getText().strip()
+        stripText = n.getShortText()
         lnk = stripText.toLowerCase().replace(" ", "-")
         sbTOC << getPrecStr(nLevel - startNodeLevel, "\t") << "- [$stripText](#$lnk)  $lf"
     }
@@ -229,7 +230,7 @@ addMetadata(sb)
 // Creating Markdown for each node in actual branch
 node.findAll().each {
     // write header - don't touch user defined headers
-    stripText = it.getText().strip()
+    stripText = it.getShortText()
     if (it.getPlainText().startsWith(hIndicator)) {
         sb << "  $lf" << stripText << lf
     }
