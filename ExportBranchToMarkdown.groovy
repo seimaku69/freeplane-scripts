@@ -1,7 +1,7 @@
 // @ExecutionModes({ON_SELECTED_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-11
+// date : 2025-07-21
 // (c) licensed under GPL-3.0 or later
 
 /*
@@ -70,7 +70,6 @@ final Pattern mdPattern = Pattern.compile("\\[.+\\]\\(.+\\)")
 final Matcher matcher = mdPattern.matcher("")
 
 def sb = new StringBuffer()
-def sbTOC = new StringBuffer()
 
 
 /*
@@ -81,7 +80,7 @@ def sbTOC = new StringBuffer()
 */
 def String getPrecStr(int relLevel, String charStr) {
 	String prec = ""
-	for (i=0; i < relLevel; i++) {
+	for (i = 0; i < relLevel; i++) {
 		prec += charStr
 	}
 	return prec
@@ -131,6 +130,27 @@ def File getMdExportFile() {
     }
     return file
 }
+
+
+/*
+    method  : getTOC
+    task    : creating a table of contents
+    input   : header Indicator, export-root Level
+    return  : StringBuffer with TOC
+*/
+def StringBuffer getTOC(String hInd, int startNL) {
+    def sbTOC = new StringBuffer()
+    sbTOC << "  $lf" << getPrecStr(2, hInd) << " Table of Contents  $lf"
+    sbTOC << "  $lf"
+    for (n in node.findAll()) {
+        nLevel = n.getNodeLevel(true)
+        stripText = n.getShortText()
+        lnk = stripText.toLowerCase().replace(" ", "-")
+        sbTOC << getPrecStr(nLevel - startNL, "\t") << "- [$stripText](#$lnk)  $lf"
+    }
+    return sbTOC
+}
+
 
 // get a file for Markdown export
 expFile = getMdExportFile()
@@ -221,18 +241,6 @@ if (toc == JOptionPane.YES_OPTION) createTOC = true
 
 // level of selected node for export - global
 startNodeLevel = node.getNodeLevel(true)
-
-// write TOC to it's own Stringbuffer
-if (createTOC) {
-    sbTOC << "  $lf" << getPrecStr(2, hIndicator) << " Table of Contents  $lf"
-    sbTOC << "  $lf"
-    for (n in node.findAll()) {
-        nLevel = n.getNodeLevel(true)
-        stripText = n.getShortText()
-        lnk = stripText.toLowerCase().replace(" ", "-")
-        sbTOC << getPrecStr(nLevel - startNodeLevel, "\t") << "- [$stripText](#$lnk)  $lf"
-    }
-}
 
 // adding metadata block
 addMetadata(sb)
@@ -356,14 +364,13 @@ node.findAll().each {
         }
     }
 
-    // adding TOC after first title - it's empty if not created
-    if (it == node) sb << sbTOC.toString()
-
     // copy note as paragraph text - should be markdown
     if (expNotes && it.getNote()) {
         sb << "  $lf" << it.getNote() << "  $lf"
     }
 
+    // adding TOC after first title if chosen
+    if (it == node && createTOC) sb << getTOC(hIndicator, startNodeLevel).toString()
 }
 
 // write export to choosen file
@@ -372,7 +379,6 @@ try {
     myWriter.write(sb.toString())
     myWriter.close();
     c.setStatusInfo("standard", "Successfully exported to " + expFile.getPath(), "button_ok")
-    //ui.informationMessage("Successfully exported to " + expFile.getPath())
 } catch (IOException ex) {
     ui.errorMessage("An error occurred ! " + ex)
     return
