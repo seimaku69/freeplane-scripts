@@ -23,13 +23,11 @@ final String tStatus = "STATUS"
 final String tDone = "DONE"
 
 def StringBuilder sb = new StringBuilder()
-def int counter = 0
 
 // create new child node from actual selected
 taskNode = node.createChild()
-taskNode.format = "markdownPatternFormat"
-taskNode.setNoteContentType("markdown")
-//tasks.setNoteContentType("auto")
+taskNode.setFormat("markdownPatternFormat")
+taskNode.setNoteContentType("auto")
 taskNode.setFree(true)
 taskNode.style.setBackgroundColorCode("#FFFF00")
 taskNode.style.setTextColorCode("#333333")
@@ -38,36 +36,33 @@ taskNode.text = "**Tasklist (All Tasks) " + '**'
 taskNode.attributes = ["Date" : format(new Date(), "yyyy-MM-dd : HH:mm")]
 taskNode.attributes.optimizeWidths()
 
-sb << '### Tasklist  ' + lf
-sb << '*(' << tType << ' == ' << tTask << ' && ' << tStatus << ' != ' << tDone << ')*  ' << lf
-sb << '  ' << lf
-
-// scan descendants of actual node - taskNode included in findAll()
+sb << "Tasklist (All Tasks)" << lf
+sb << lf
+sb << "The childs of this node are all successors of [$node.text] with attributes :" << lf
+sb << lf
+sb << "$tType  == $tTask && $tStatus != $tDone" << lf
+sb << lf
+sb << "They provide a direct link to each task.." << lf
+// scan successors of actual node - taskNode included in findAll()
 node.findAll().each {
     if (it.attributes.getFirst(tType) == tTask) {
         // create child with link for each open task or task without status
-        // it.attributes.getFirst("STATUS") returns NULL if attribute 'STATUS' does not exist -> NULL != "Done" 
         if (it.attributes.getTransformed().getFirst(tStatus) != tDone) {
-            counter = counter + 1
-            // write note text
-            sb << '  ' << lf << '*Task(' << counter.toString() << ') :* **' << it.text << '**  ' << lf
-            // Create child with link for each open task
-            // Each child gets the colors of the linked node
+            // Create child with a link for each open task
+            // Each child gets the colors of its task
             newChild = taskNode.createChild()
-            //            newChild.style.setBackgroundColorCode("#FFFF00")
             newChild.style.setBackgroundColorCode(it.style.getBackgroundColorCode())
-            //            newChild.style.setTextColorCode("#333333")
             newChild.style.setTextColorCode(it.style.getTextColorCode())
             newChild.format = "markdownPatternFormat"
-            newChild.text = '**' + it.text + '**'
-            newChild.link.text = '#' + it.id
+            newChild.setNoteContentType("auto")
+            newChild.text = "**$it.text**"
+            newChild.link.text = "#$it.id"
         }
     }    
 }
 
-sb << '  ' << lf
-sb << '  ' << lf << '..found ' << counter.toString() << ' Task(s).  ' << lf
-taskNode.attributes.add("Task(s)", counter.toString())
+// add attribute with formula
+taskNode.attributes.add("Task(s)", "=children.size()")
 
 // write to note of task-node
 taskNode.note = sb.toString()
