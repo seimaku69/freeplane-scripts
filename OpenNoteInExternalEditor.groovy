@@ -54,7 +54,12 @@ switch (node.getNoteContentType()) {
         ext = ".txt"
 }
 
-File tmpPath = node.getMindMap().getFile().getParentFile()
+File tmpPath = node.getMindMap().getFile()
+if (!tmpPath) {
+    ui.errorMessage("No file exists for this map - save it first ?!")
+    return
+}
+tmpPath = tmpPath.getParentFile()
 
 //create temporary file
 try {
