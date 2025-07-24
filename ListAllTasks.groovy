@@ -1,16 +1,16 @@
 // @ExecutionModes({ON_SELECTED_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-01
+// date : 2025-07-24
 // (c) licensed under GPL-3.0 or later
 
 
 /* 
     This script lists all tasks (tType == tTask) in the subtree of a node which are not 
     done (tStatus != tDone) or have no tStatus attribute.
-    It creates a child of the Tasklist with a direct link to undone task.
-    It is recommended to set adjust values for the used variables (tType,tTask,tStatus,tDone)
-    to meet your needs.
+    It creates a child for every undone task with a direct link to it.
+    It is recommended to set values for all variables (tType,tTask,tStatus,tDone) to your
+    own way of thinking.
 */
 
 final String lf = System.lineSeparator()
@@ -44,30 +44,23 @@ sb << "$tType  == $tTask && $tStatus != $tDone" << lf
 sb << lf
 sb << "They provide a direct link to each task.." << lf
 // scan successors of actual node - taskNode included in findAll()
-node.findAll().each {
-    if (it.attributes.getFirst(tType) == tTask) {
-        // create child with link for each open task or task without status
-        if (it.attributes.getTransformed().getFirst(tStatus) != tDone) {
-            // Create child with a link for each open task
-            // Each child gets the colors of its task
-            newChild = taskNode.createChild()
-            newChild.style.setBackgroundColorCode(it.style.getBackgroundColorCode())
-            newChild.style.setTextColorCode(it.style.getTextColorCode())
-            newChild.format = "markdownPatternFormat"
-            newChild.setNoteContentType("auto")
-            newChild.text = "**$it.text**"
-            newChild.link.text = "#$it.id"
-        }
-    }    
+for (child in node.findAll()) {
+    isTask = (child.attributes.getFirst(tType) == tTask) ? true : false
+    status = child.attributes.getTransformed().getFirst(tStatus)
+    if (!isTask || status == tDone) continue
+    // Create child with link for each open task in original color
+    newChild = taskNode.createChild()
+    newChild.style.setBackgroundColorCode(child.style.getBackgroundColorCode())
+    newChild.style.setTextColorCode(child.style.getTextColorCode())
+    newChild.format = "markdownPatternFormat"
+    newChild.setNoteContentType("auto")
+    newChild.text = "**$child.text**"
+    newChild.link.text = "#$child.id"
 }
-
 // add attribute with formula
 taskNode.attributes.add("Task(s)", "=children.size()")
-
-// write to note of task-node
 taskNode.note = sb.toString()
 taskNode.setFolded(true)
-// select node
 c.select(taskNode)
 
 
