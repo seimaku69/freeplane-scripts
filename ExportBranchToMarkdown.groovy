@@ -26,6 +26,8 @@
 
     #todo 02 : Effizientere Nutzung von Pattern und Matcher ?
 
+    #todo 02 : Export von Icons ?
+
 */
 
 import java.io.FileWriter
@@ -93,14 +95,12 @@ def String getPrecStr(int relLevel, String charStr) {
     input   : StringBuffer to write to
 */
 def addMetadata(StringBuffer strBuff) {
-    strBuff << "<!-- Begin Metadata  $lf"
+    strBuff << "[meta:freeplane file]:- '" << node.getMindMap().getFile().getPath() << "'  $lf"
+    strBuff << "[meta:export branch]:- '" << node.getText() << "'  $lf"
+    strBuff << "[meta:export date]:- '" << format(new Date(), "yyyy-MM-dd HH:mm:ss") << "'  $lf"
+    strBuff << "[meta:export script]:- 'ExportBranchToMarkdown.groovy'  $lf"
+    strBuff << "[meta:script author]:- 'GitHub/seimaku69; Markus Seilnacht; seimaku(at)proton(dot)me'  $lf"
     strBuff << "  $lf"
-    strBuff << "[Freeplane file]:- '" << node.getMindMap().getFile().getPath() << "'  $lf"
-    strBuff << "[Export date]:- '" << format(new Date(), "yyyy-MM-dd HH:mm:ss") << "'  $lf"
-    strBuff << "[Export script]:- 'ExportBranchToMarkdown.groovy'  $lf"
-    strBuff << "[Script author]:- 'GitHub/seimaku69; Markus Seilnacht; seimaku(at)proton(dot)me'  $lf"
-    strBuff << "  $lf"
-    strBuff << "End Metadata -->  $lf"
 }
 
 
