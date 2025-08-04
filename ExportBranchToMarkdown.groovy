@@ -63,6 +63,7 @@ boolean expAlias = true
 boolean expAttrs = true
 boolean expConns = true
 boolean expDetails = true
+boolean expImgs = true
 boolean expLinks = true
 boolean expNotes = true
 boolean expTags = true
@@ -163,7 +164,7 @@ if(!expFile) {
 // -----------------------------------------------------
 
 JPanel panel = new JPanel()
-panel.setLayout(new GridLayout(7,1))
+panel.setLayout(new GridLayout(8,1))
 
 // Checkbox for Alias
 ckAlias = new JCheckBox("Aliases", expAlias)
@@ -209,6 +210,15 @@ ckLinks.addItemListener(new ItemListener() {
 	}
 })
 panel.add(ckLinks)
+
+// Checkbox for Images
+ckImg = new JCheckBox("Images", expImgs)
+ckImg.addItemListener(new ItemListener() {
+	public void itemStateChanged(ItemEvent e) {
+		expImgs = (e.getStateChange() == ItemEvent.SELECTED) ? true : false
+	}
+})
+panel.add(ckImg)
 
 // Checkbox for notes
 ckNotes = new JCheckBox("Notes", expNotes)
@@ -262,7 +272,7 @@ node.findAll().each {
     }
     
     // picture assigned to node
-    if (it.getExternalObject()) {
+    if (expImgs && it.getExternalObject()) {
         uri = it.getExternalObject().getUri()
         sb << "  $lf![$it.text]($uri)  $lf"
     }
