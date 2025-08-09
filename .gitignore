@@ -4,7 +4,6 @@
 # keine PDF,HTML,Json
 *.pdf
 *.html
-*.json
 
 # ..dennoch berücksichtigen
 !README.md
