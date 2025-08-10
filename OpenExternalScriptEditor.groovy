@@ -1,7 +1,7 @@
 // @ExecutionModes({ON_SINGLE_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-06
+// date : 2025-08-10
 // (c) licensed under GPL-3.0 or later
 
 /*
@@ -18,13 +18,25 @@
     2. It is recommended to edit the value of 'editor' for your own needs.
 */
 
+import groovy.json.JsonSlurper
+
+final sep = File.separator 
 
 // setup for editor to use
-// final String editor = "/usr/bin/xed"
-final String editor = "flatpak run org.geany.Geany"  // flatpak :-/
-// final String editor = "/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=kate --file-forwarding org.kde.kate"
-// final String editor = "/usr/bin/notepadqq --new-window"
-// final String editor = "/opt/sublime_text/sublime_text"
+// String editor = "/usr/bin/xed"
+String editor = "flatpak run org.geany.Geany"  // flatpak :-/
+// String editor = "/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=kate --file-forwarding org.kde.kate"
+// String editor = "/usr/bin/notepadqq --new-window"
+
+// search config for editor - overwrites setting above if exists
+String userDir = c.getUserDirectory().getPath()
+File configFile = new File(userDir + sep + "scriptConfig.json")
+
+if (configFile.exists()) {
+    JsonSlurper jsSlurper = new JsonSlurper()
+	Map jsMap = jsSlurper.parse(configFile)
+    if (jsMap['extern.editor.script']) editor = jsMap['extern.editor.script']
+}
 
 // path to temporary script file - e.g. '~/.config/freeplane/[version]/tmpScript.groovy
 String tmpPath = c.getUserDirectory().getAbsolutePath() + File.separator + "tmpScript.groovy"

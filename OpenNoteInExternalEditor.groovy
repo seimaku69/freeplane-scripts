@@ -1,7 +1,7 @@
 // @ExecutionModes({ON_SELECTED_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-06
+// date : 2025-08-10
 // (c) licensed under GPL-3.0 or later
 
 /*
@@ -30,13 +30,23 @@ If you don't save the temporary file in your editor there are no changes in your
 */
 
 import java.io.File
+import groovy.json.JsonSlurper
 
-// final String editor = "xed --new-window"
-final String editor = "/usr/bin/ghostwriter"    // free, fast,with preview
-// final String editor = "/home/markus/Anwendungen/marktext-x86_64.AppImage"
-// final String editor = "/usr/bin/notepadqq"
-// final String editor = "/opt/sublime_text/sublime_text -w"
-// final String editor = "/usr/bin/typora"
+final sep = File.separator 
+
+// String editor = "/usr/bin/xed --new-window"
+String editor = "/usr/bin/ghostwriter"    // free, fast,with preview
+// String editor = "/usr/bin/notepadqq"
+
+// search config for editor - overwrites setting above if exists
+String userDir = c.getUserDirectory().getPath()
+File configFile = new File(userDir + sep + "scriptConfig.json")
+
+if (configFile.exists()) {
+    JsonSlurper jsSlurper = new JsonSlurper()
+	Map jsMap = jsSlurper.parse(configFile)
+    if (jsMap['extern.editor.note']) editor = jsMap['extern.editor.note']
+}
 
 // check content type of note to set extension 
 // extensions determines often syntax highlighting in an editor
@@ -80,6 +90,3 @@ node.note = tmpFile.getText('UTF-8')
 node.getMindMap().save(true)
 // delete temporary file
 tmpFile.delete()
-
-
-
