@@ -28,6 +28,8 @@
 
     #todo 02 : Export von Icons ?
 
+    #todo 03 : Logik für Obsidian in Konfigurationsdatei verschieben ?
+
 */
 
 import java.io.FileWriter
@@ -51,9 +53,6 @@ import java.awt.Dimension
 lf = System.lineSeparator()
 // Indicator for being a header-line - they start with "#"
 final String hIndicator = "#"
-
-// Default for creating a TOC in Markdown file
-boolean createTOC = true
 
 // Use Obsidian to edit export
 final boolean useObsidian = false
@@ -247,7 +246,7 @@ if (ret == JOptionPane.CANCEL_OPTION) return
 // asking for creation of TOC in Markdown file
 int toc = ui.showConfirmDialog(null, "Do you want to create a TOC (table of contents) ?",
 "Markdown Export", JOptionPane.YES_NO_OPTION)
-if (toc == JOptionPane.YES_OPTION) createTOC = true
+boolean createTOC = (toc == JOptionPane.YES_OPTION) ? true : false
 
 // level of selected node for export - global
 startNodeLevel = node.getNodeLevel(true)
