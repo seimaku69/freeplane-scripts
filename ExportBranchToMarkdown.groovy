@@ -1,7 +1,7 @@
 // @ExecutionModes({ON_SELECTED_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-21
+// date : 2025-08-13
 // (c) licensed under GPL-3.0 or later
 
 /*
@@ -14,7 +14,8 @@
     Be sure to permit operations (file/write) for Scripting-Plugin in Preferences !
 
     Attention :
-    1. If you want to use another editor for Markdown output than the system default - use scriptConfig.json
+    1. If you want to use another editor for Markdown output than the system default
+        set 'mdEditor' to your needs or use scriptConfig.json (..best way !).
     2. The order of Markdown titles is equal to 'Outline view' (F10) in the mindmap.
     3. You can set the boolean values for exported elements to your own needs - they
         are used as defaults for the checkboxes.
