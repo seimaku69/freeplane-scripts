@@ -1,4 +1,17 @@
 {
 	"extern.editor.note": "/usr/bin/ghostwriter",
-	"extern.editor.script": "/usr/bin/codium"
+	"extern.editor.script": "flatpak run org.geany.Geany",
+	"unused.1.extern.editor.script": "/usr/bin/notepadqq",
+	"tasks.params": {
+		"type.identifier": "TYPE",
+		"type.task": "TASK",
+		"status.identifier": "STATUS",
+		"status.done": "DONE",
+		"duedate.identifier": "DUE DATE",
+		"duedate.format": "yyyy-MM-dd  HH:mm:ss"
+	},
+	"markdown.header.indicator": "#",
+	"markdown.export.editor": "/usr/bin/zettlr",
+	"unused.0.markdown.export.editor": "/home/markus/Anwendungen/marktext-x86_64.AppImage",
+	"unused.1.markdown.export.editor": "/usr/bin/codium"
 }
