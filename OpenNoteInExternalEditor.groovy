@@ -32,15 +32,13 @@ If you don't save the temporary file in your editor there are no changes in your
 import java.io.File
 import groovy.json.JsonSlurper
 
-final sep = File.separator 
-
 // String editor = "/usr/bin/xed --new-window"
 String editor = "/usr/bin/ghostwriter"    // free, fast,with preview
 // String editor = "/usr/bin/notepadqq"
 
 // search config for editor - overwrites setting above if exists
 String userDir = c.getUserDirectory().getPath()
-File configFile = new File(userDir + sep + "scriptConfig.json")
+File configFile = new File(userDir + File.separator + "scriptConfig.json")
 
 if (configFile.exists()) {
     JsonSlurper jsSlurper = new JsonSlurper()
