@@ -20,8 +20,6 @@
 
 import groovy.json.JsonSlurper
 
-final sep = File.separator 
-
 // setup for editor to use
 // String editor = "/usr/bin/xed"
 String editor = "flatpak run org.geany.Geany"  // flatpak :-/
@@ -30,7 +28,7 @@ String editor = "flatpak run org.geany.Geany"  // flatpak :-/
 
 // search config for editor - overwrites setting above if exists
 String userDir = c.getUserDirectory().getPath()
-File configFile = new File(userDir + sep + "scriptConfig.json")
+File configFile = new File(userDir + File.separator + "scriptConfig.json")
 
 if (configFile.exists()) {
     JsonSlurper jsSlurper = new JsonSlurper()
