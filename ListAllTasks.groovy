@@ -1,7 +1,7 @@
 // @ExecutionModes({ON_SELECTED_NODE})
 
 // author : Markus Seilnacht
-// date : 2025-07-24
+// date : 2025-08-13
 // (c) licensed under GPL-3.0 or later
 
 
@@ -13,16 +13,40 @@
     own way of thinking.
 */
 
+/*
+    todo 01 : Umstellung auf externe Konfiguration
+*/
+
+import groovy.json.JsonSlurper
+
 final String lf = System.lineSeparator()
 
 // defines which attribute is signed as task
-final String tType = "TYPE"
-final String tTask = "TASK"
+String tType = "TYPE"
+String tTask = "TASK"
 // defines which attribute is checked for status and Done-Value
-final String tStatus = "STATUS"
-final String tDone = "DONE"
+String tStatus = "STATUS"
+String tDone = "DONE"
 
 def StringBuilder sb = new StringBuilder()
+
+
+// Path for config file - overwrites setting above if exists
+final String userDir = c.getUserDirectory().getPath()
+final File configFile = new File(userDir + File.separator + "scriptConfig.json")
+
+// Search for external configuration parameters - overwrite internal ones !
+if (configFile.exists()) {
+    JsonSlurper jsSlurper = new JsonSlurper()
+	Map jsMap = jsSlurper.parse(configFile)
+    tasks = jsMap['tasks.params']
+    if (tasks) {
+        if (tasks['type.identifier']) tType = tasks['type.identifier']
+        if (tasks['type.task']) tTask = tasks['type.task']
+        if (tasks['status.identifier']) tStatus = tasks['status.identifier']
+        if (tasks['status.done']) tDone = tasks['status.done']
+    }
+}
 
 // create new child node from actual selected
 taskNode = node.createChild()
@@ -62,5 +86,3 @@ taskNode.attributes.add("Task(s)", "=children.size()")
 taskNode.note = sb.toString()
 taskNode.setFolded(true)
 c.select(taskNode)
-
-
