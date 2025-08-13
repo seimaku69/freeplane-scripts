@@ -1,6 +1,6 @@
 [meta:freeplane file]:- '/home/markus/Zentrum/Projekte/Implementierung/Freeplane/Mindmaps/Github_Readme.mm'  
 [meta:export branch]:- 'README - Freeplane Scripts'  
-[meta:export date]:- '2025-08-10 21:34:13'  
+[meta:export date]:- '2025-08-13 18:22:14'  
 [meta:export script]:- 'ExportBranchToMarkdown.groovy'  
 [meta:script author]:- 'GitHub/seimaku69; Markus Seilnacht; seimaku(at)proton(dot)me'  
   
@@ -12,7 +12,7 @@
 | Name | Value |
 | ---- | ----- |
 | author | Markus Seilnacht |
-| date | 2025-08-10 |
+| date | 2025-08-13 |
   
 ## Table of Contents  
   
@@ -78,12 +78,26 @@ in Freeplane.
   
 The file 'scriptConfig.json' defines some parameters for configuration of the following scripts :
 
-- OpenNoteInExternalEditor.groovy {external.editor.note = path to external editor for notes (e.g. markdown)}
-- OpenExternalScriptEditor.groovy {external.editor.script = path to external editor for scripts (e.g.groovy)}
+- OpenNoteInExternalEditor.groovy {external.editor.note} : path to external editor for notes
+
+- OpenExternalScriptEditor.groovy {external.editor.script} : path to external editor for scripts
+
+- ListAllTasks.groovy & ListDueTasks.groovy
+  - {tasks.params{type.identifier}} : attribute name to identify a node-type (e.g. 'TYPE')
+  - {tasks.params{type.task}} : attribute value of type.identifier for a task-node (e.g. 'TASK')
+  - {tasks.params{status.identifier}} : attribute name to identify a node status (e.g. 'STATUS')
+  - {tasks.params{status.done}} : attribute value of status.identifier for a done status (e.g. 'DONE')
+  - {tasks.params{duedate.identifier}} : attribute name to identify a due date (e.g. 'DUE DATE')
+  - {tasks.params{duedate.format}} : format String for a value of attribute duedate.identifier (e.g. '"yyyy-MM-dd HH:mm:ss")
+- ExportBranchToMarkdown.groovy 
+  - {markdown.export.editor} : path to editor for opening markdown file after export. If this is not set the system associated application is used.
+  - {markdown.header.indicator} : Prefix which is used to write Markdown headers in the output.
 
 **Copy this file to Freeplanes User Directory ('Tools' \> 'Open user directory', '~/.config/freeplane/\[version\]')**.  
-If the scripts above find this file and the correct parameter in it, they will use the given paths to executables as external editors, otherwise the value for 'editor' in the script-file itself is used.  
-In this sense this config is an optional way to configure your needs without any changes in the script.  
+If the scripts above can find this file and the necessary parameter in there, they will be used to overwrite the definitions in the script itself.
+**This config-file is an optional way to configure your needs without any changes in the code (parameters at beginning) of a scipt.**  
+Parameters which are not listed above are not used by these scripts \- especially the `"unused...."` parameters are intended as 'comments' for optional use (JSon doesn't support comments.).  
+Be sure to use the defined attribute-names and values in your nodes for task-management\- otherwise the script will not work accurate.  
   
 ## Scripts  
   
