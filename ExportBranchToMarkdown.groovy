@@ -14,7 +14,7 @@
     Be sure to permit operations (file/write) for Scripting-Plugin in Preferences !
 
     Attention :
-    1. If you want to use 'Obsidian' set 'useObsidian' to true.
+    1. If you want to use another editor for Markdown output than the system default - use scriptConfig.json
     2. The order of Markdown titles is equal to 'Outline view' (F10) in the mindmap.
     3. You can set the boolean values for exported elements to your own needs - they
         are used as defaults for the checkboxes.
@@ -25,11 +25,6 @@
         Links die mit '/' oder '# ' beginnen, werden als Text exportiert !
 
     #todo 02 : Effizientere Nutzung von Pattern und Matcher ?
-
-    #todo 02 : Export von Icons ?
-
-    #todo 03 : Logik für Obsidian in Konfigurationsdatei verschieben ?
-
 */
 
 import java.io.FileWriter
@@ -49,13 +44,16 @@ import java.awt.event.ItemEvent
 import java.awt.GridLayout
 import java.awt.Dimension
 
+import groovy.json.JsonSlurper
 
 lf = System.lineSeparator()
-// Indicator for being a header-line - they start with "#"
-final String hIndicator = "#"
+sep = File.separator 
 
-// Use Obsidian to edit export
-final boolean useObsidian = false
+// Indicator for being a header-line - they start with "#"
+String hIndicator = "#"
+
+// Default editor for output
+mdEditor = ""  // empty string for system default
 
 // exported elements
 boolean expAlias = true
@@ -70,6 +68,10 @@ boolean expTags = true
 // Pattern and Matcher for MD-Links
 final Pattern mdPattern = Pattern.compile("\\[.+\\]\\(.+\\)")
 final Matcher matcher = mdPattern.matcher("")
+
+// Path for config file - overwrites setting above if exists
+final String userDir = c.getUserDirectory().getPath()
+final File configFile = new File(userDir + sep + "scriptConfig.json")
 
 def sb = new StringBuffer()
 
@@ -151,6 +153,13 @@ def StringBuffer getTOC(String hInd, int startNL) {
     return sbTOC
 }
 
+// Search for external configuration parameters - overwrite internal ones !
+if (configFile.exists()) {
+    JsonSlurper jsSlurper = new JsonSlurper()
+	Map jsMap = jsSlurper.parse(configFile)
+    if (jsMap['markdown.header.indicator']) hIndicator = jsMap['markdown.header.indicator']
+    if (jsMap['markdown.export.editor']) mdEditor = jsMap['markdown.export.editor']
+}
 
 // get a file for Markdown export
 expFile = getMdExportFile()
@@ -399,8 +408,11 @@ try {
 int openExp = ui.showConfirmDialog(null, "Export to " + expFile.getPath() + " successful ! $lf"
     + "Do you want to open this file ?","Markdown Export", JOptionPane.YES_NO_OPTION)
 if (openExp == JOptionPane.YES_OPTION) {
-    prefix = ""
-    if (useObsidian) prefix = "obsidian://open?path="
-    expUri = java.net.URI.create(prefix + expFile.getPath())
-    loadUri(expUri)
+    if (mdEditor != "") {
+        String exCmd = mdEditor + " " + expFile.getPath()
+        Process process = exCmd.execute()
+    } else {
+        expUri = java.net.URI.create(expFile.getPath())
+        loadUri(expUri)
+    }
 }
