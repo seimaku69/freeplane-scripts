@@ -8,13 +8,13 @@
 /* 
     This script lists all tasks (tType == tTask) in the subtree of a node which are not 
     done (tStatus != tDone) or have no tStatus attribute.
+    ..or use optional scriptConfig.json.
     It creates a child for every undone task with a direct link to it.
     It is recommended to set values for all variables (tType,tTask,tStatus,tDone) to your
     own way of thinking.
 */
 
 /*
-    todo 01 : Umstellung auf externe Konfiguration
 */
 
 import groovy.json.JsonSlurper
