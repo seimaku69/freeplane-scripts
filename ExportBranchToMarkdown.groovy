@@ -47,7 +47,6 @@ import java.awt.Dimension
 import groovy.json.JsonSlurper
 
 lf = System.lineSeparator()
-sep = File.separator 
 
 // Indicator for being a header-line - they start with "#"
 String hIndicator = "#"
@@ -71,7 +70,7 @@ final Matcher matcher = mdPattern.matcher("")
 
 // Path for config file - overwrites setting above if exists
 final String userDir = c.getUserDirectory().getPath()
-final File configFile = new File(userDir + sep + "scriptConfig.json")
+final File configFile = new File(userDir + File.separator + "scriptConfig.json")
 
 def sb = new StringBuffer()
 
