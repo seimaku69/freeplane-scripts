@@ -11,7 +11,8 @@
 		"duedate.format": "yyyy-MM-dd  HH:mm:ss"
 	},
 	"markdown.header.indicator": "#",
-	"markdown.export.editor": "/usr/bin/zettlr",
+	"markdown.export.editor": "",
+	"unused.2.markdown.export.editor": "/usr/bin/zettlr",
 	"unused.0.markdown.export.editor": "/home/markus/Anwendungen/marktext-x86_64.AppImage",
 	"unused.1.markdown.export.editor": "/usr/bin/codium"
 }
